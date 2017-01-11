@@ -14,21 +14,43 @@ namespace BinarySql
     {
         static void Main(string[] args)
         {
-            var producer = new Producer(2000);
-            var con1 = new ColumnConsumer(GetConnectionString(), producer);
-            var con2 = new ColumnConsumer(GetConnectionString(), producer);
-            var con3 = new ColumnConsumer(GetConnectionString(), producer);
 
-            producer.Start();
+            {
+                using (var producer = new Producer(2000))
+                {
+                    var con1 = new ColumnConsumer(GetConnectionString(), producer);
+                    var con2 = new ColumnConsumer(GetConnectionString(), producer);
+                    var con3 = new ColumnConsumer(GetConnectionString(), producer);
 
-            con1.Start();
-            con2.Start();
-            con3.Start();
+                    producer.Start();
+
+                    con1.Start();
+                    con2.Start();
+                    con3.Start();
 
 
-            Thread.Sleep(30000);
-            Console.WriteLine(producer.Produced);
-            
+                    Thread.Sleep(30000);
+                    Console.WriteLine(producer.Produced);
+                }
+            }
+            {
+                using (var producer = new Producer(2000))
+                {
+                    var con1 = new BinaryConsumer(GetConnectionString(), producer);
+                    var con2 = new BinaryConsumer(GetConnectionString(), producer);
+                    var con3 = new BinaryConsumer(GetConnectionString(), producer);
+
+                    producer.Start();
+
+                    con1.Start();
+                    con2.Start();
+                    con3.Start();
+
+
+                    Thread.Sleep(30000);
+                    Console.WriteLine(producer.Produced);
+                }
+            }
         }
 
         private static string GetConnectionString()
@@ -231,11 +253,12 @@ namespace BinarySql
         }
     }
 
-    class Producer
+    class Producer : IDisposable
     {
         Queue<Batch> batches = new Queue<Batch>();
         object _lock = new object();
         private int batchSize;
+        private bool go;
 
         public int Produced { get; private set; } = 0;
 
@@ -261,9 +284,10 @@ namespace BinarySql
 
         internal void Start()
         {
+            go = true;
             var a = new Action(() =>
             {
-                while (true)
+                while (go)
                 {
                     if (batches.Count < 10)
                     {
@@ -274,6 +298,12 @@ namespace BinarySql
 
             });
             a.BeginInvoke(null, null);
+        }
+
+        public void Dispose()
+        {
+            go = false;
+            batches.Clear();
         }
     }
 }
