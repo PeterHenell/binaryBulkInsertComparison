@@ -1,4 +1,7 @@
 # binaryBulkInsertComparison
+From question on SO http://stackoverflow.com/questions/41597046/sql-server-performance-50-columns-vs-single-binary-varbinary.
+
+
 Comparing bulk inserts done as a binary field vs 50 float fields
 
 Uses dll from https://github.com/PeterHenell/IDataReaderMock which allow me to use any collection of objects as a IDataReader.
