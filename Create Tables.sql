@@ -1,6 +1,11 @@
 USE master;
 GO
-IF DB_ID('BinaryTestGround') IS NOT NULL DROP DATABASE [BinaryTestGround];
+
+IF DB_ID('BinaryTestGround') IS NOT NULL 
+BEGIN
+    ALTER DATABASE [BinaryTestGround] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE [BinaryTestGround];
+END
 GO
 CREATE DATABASE [BinaryTestGround];
 GO
@@ -69,4 +74,7 @@ select count(*) from ManyColumns -- 15,172 MB
 
 select count(*) from OneBigBinaryColumn --- 766,586 MB
 
-SELECT AVG(LEN(bin)) FROM OneBigBinaryColumn
+
+SELECT TOP 100 * FROM dbo.ManyColumns
+SELECT TOP 100 * FROM dbo.OneBigBinaryColumn
+

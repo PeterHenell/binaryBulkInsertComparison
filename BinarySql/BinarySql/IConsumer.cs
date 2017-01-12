@@ -1,7 +1,8 @@
-﻿namespace BinarySql
+﻿using System.Data;
+namespace BinarySql
 {
     interface IConsumer
     {
-        void Consume(Batch b);
+        void Consume(IDataReader b);
     }
 }

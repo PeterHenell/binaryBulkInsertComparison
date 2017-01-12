@@ -18,6 +18,15 @@ Uses dll from https://github.com/PeterHenell/IDataReaderMock which allow me to u
 * For both 50 columns and then 1 binary column:
 ** Continuously bulk inserted batches of 2000 rows until 30 seconds had passed.
 
+## Results
+Do not read to much into these results, the code is probably not optimized equally for both methods.
+
+```
+select count(*) from ManyColumns -- 1 677 161 Rows
+
+select count(*) from OneBigBinaryColumn --- 5 949 024 Rows
+
+```
 
 ## But how can there be such a big difference between the two methods?
 

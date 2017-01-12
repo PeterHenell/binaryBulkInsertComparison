@@ -1,5 +1,4 @@
-﻿using DataReaderTest;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections;
+using System.Data;
 
 namespace BinarySql
 {
@@ -65,7 +65,7 @@ namespace BinarySql
             this.connectionString = connectionString;
         }
 
-        public void Consume(Batch b)
+        public void Consume(IDataReader b)
         {
             using (var con = new SqlConnection(connectionString))
             {
@@ -91,9 +91,8 @@ namespace BinarySql
                             SourceOrdinal = i
                         });
                 }
-                var col = new DataReaderCollection<Measurement>(b.Measurements);
                 c.EnableStreaming = true;
-                c.WriteToServer(col);
+                c.WriteToServer(b);
                 tran.Commit();
             }
             Console.WriteLine("Commit {0}", Thread.CurrentThread.ManagedThreadId);
@@ -103,9 +102,9 @@ namespace BinarySql
         {
             var a = new Action(() =>
             {
-                foreach (var batch in producer.GetData())
+                foreach (var size in producer.GetData())
                 {
-                    Consume(batch);
+                    Consume(new Batch().Fill(size));
                     Console.WriteLine("Ate a bunch {0}", Thread.CurrentThread.ManagedThreadId);
                 }
             });
@@ -125,7 +124,7 @@ namespace BinarySql
             this.connectionString = connectionString;
         }
 
-        public void Consume(Batch b)
+        public void Consume(IDataReader b)
         {
             using (var con = new SqlConnection(connectionString))
             {
@@ -146,11 +145,11 @@ namespace BinarySql
                             DestinationColumn = fieldName,
                             SourceColumn = fieldName,
                             DestinationOrdinal = 1,
-                            SourceOrdinal = 50
+                            SourceOrdinal = 0
                         });
-                var col = new DataReaderCollection<Measurement>(b.Measurements);
+                //var col = new DataReaderCollection<BinaryMeasurement>(b.Measurements);
                 c.EnableStreaming = true;
-                c.WriteToServer(col);
+                c.WriteToServer(b);
                 tran.Commit();
             }
             Console.WriteLine("Commit {0}", Thread.CurrentThread.ManagedThreadId);
@@ -160,9 +159,9 @@ namespace BinarySql
         {
             var a = new Action(() =>
             {
-                foreach (var batch in producer.GetData())
+                foreach (var size in producer.GetData())
                 {
-                    Consume(batch);
+                    Consume(new BinaryBatch().Fill(size));
                     Console.WriteLine("Ate a bunch {0}", Thread.CurrentThread.ManagedThreadId);
                 }
             });
@@ -171,64 +170,15 @@ namespace BinarySql
         }
     }
 
-    class Measurement
-    {
 
-        public float c0 { get { return float.MaxValue; } }
-        public float c1 { get { return float.MaxValue; } }
-        public float c2 { get { return float.MaxValue; } }
-        public float c3 { get { return float.MaxValue; } }
-        public float c4 { get { return float.MaxValue; } }
-        public float c5 { get { return float.MaxValue; } }
-        public float c6 { get { return float.MaxValue; } }
-        public float c7 { get { return float.MaxValue; } }
-        public float c8 { get { return float.MaxValue; } }
-        public float c9 { get { return float.MaxValue; } }
-        public float c10 { get { return float.MaxValue; } }
-        public float c11 { get { return float.MaxValue; } }
-        public float c12 { get { return float.MaxValue; } }
-        public float c13 { get { return float.MaxValue; } }
-        public float c14 { get { return float.MaxValue; } }
-        public float c15 { get { return float.MaxValue; } }
-        public float c16 { get { return float.MaxValue; } }
-        public float c17 { get { return float.MaxValue; } }
-        public float c18 { get { return float.MaxValue; } }
-        public float c19 { get { return float.MaxValue; } }
-        public float c20 { get { return float.MaxValue; } }
-        public float c21 { get { return float.MaxValue; } }
-        public float c22 { get { return float.MaxValue; } }
-        public float c23 { get { return float.MaxValue; } }
-        public float c24 { get { return float.MaxValue; } }
-        public float c25 { get { return float.MaxValue; } }
-        public float c26 { get { return float.MaxValue; } }
-        public float c27 { get { return float.MaxValue; } }
-        public float c28 { get { return float.MaxValue; } }
-        public float c29 { get { return float.MaxValue; } }
-        public float c30 { get { return float.MaxValue; } }
-        public float c31 { get { return float.MaxValue; } }
-        public float c32 { get { return float.MaxValue; } }
-        public float c33 { get { return float.MaxValue; } }
-        public float c34 { get { return float.MaxValue; } }
-        public float c35 { get { return float.MaxValue; } }
-        public float c36 { get { return float.MaxValue; } }
-        public float c37 { get { return float.MaxValue; } }
-        public float c38 { get { return float.MaxValue; } }
-        public float c39 { get { return float.MaxValue; } }
-        public float c40 { get { return float.MaxValue; } }
-        public float c41 { get { return float.MaxValue; } }
-        public float c42 { get { return float.MaxValue; } }
-        public float c43 { get { return float.MaxValue; } }
-        public float c44 { get { return float.MaxValue; } }
-        public float c45 { get { return float.MaxValue; } }
-        public float c46 { get { return float.MaxValue; } }
-        public float c47 { get { return float.MaxValue; } }
-        public float c48 { get { return float.MaxValue; } }
-        public float c49 { get { return float.MaxValue; } }
-        public byte[] bin { get { return b; } }
+    class BinaryBatch : IDataReader
+    {
+        int current = 0;
+        private int size;
 
         private static byte[] b;
 
-        static Measurement()
+        static BinaryBatch()
         {
             var sb = new StringBuilder();
             for (int i = 0; i < 50; i++)
@@ -237,30 +187,370 @@ namespace BinarySql
             }
             b = Encoding.UTF8.GetBytes(sb.ToString());
         }
+
+        public BinaryBatch()
+        {
+            current = 0;
+        }
+
+        public BinaryBatch Fill(int size)
+        {
+            this.size = size;
+            return this;
+        }
+
+        public void Close()
+        {
+        }
+
+        public int Depth
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public DataTable GetSchemaTable()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsClosed
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public bool NextResult()
+        {
+            current++;
+            return current < size;
+        }
+
+        public bool Read()
+        {
+            current++;
+            return current < size;
+        }
+
+        public int RecordsAffected
+        {
+            get { return 1; }
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public int FieldCount
+        {
+            get { return 1; }
+        }
+
+        public bool GetBoolean(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte GetByte(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+        {
+            throw new NotImplementedException();
+        }
+
+        public char GetChar(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDataReader GetData(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetDataTypeName(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DateTime GetDateTime(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal GetDecimal(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetDouble(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Type GetFieldType(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public float GetFloat(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid GetGuid(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public short GetInt16(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetInt32(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long GetInt64(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetName(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetOrdinal(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetString(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object GetValue(int i)
+        {
+            return b;
+        }
+
+        public int GetValues(object[] values)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsDBNull(int i)
+        {
+            return false;
+        }
+
+        public object this[string name]
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public object this[int i]
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 
-    class Batch
+
+    class Batch : IDataReader
     {
-        public List<Measurement> Measurements { get; set; }
+        int size;
+        int current = 0;
 
         public Batch()
         {
-            Measurements = new List<Measurement>();
+            current = 0;
         }
 
         public Batch Fill(int size)
         {
-            for (int i = 0; i < size; i++)
-            {
-                Measurements.Add(new Measurement());
-            }
+            this.size = size;
             return this;
+        }
+
+        public void Close()
+        {
+        }
+
+        public int Depth
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public DataTable GetSchemaTable()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsClosed
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public bool NextResult()
+        {
+            current++;
+            return current < size;
+        }
+
+        public bool Read()
+        {
+            current++;
+            return current < size;
+        }
+
+        public int RecordsAffected
+        {
+            get { return 1; }
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public int FieldCount
+        {
+            get { return 51; }
+        }
+
+        public bool GetBoolean(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte GetByte(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+        {
+            throw new NotImplementedException();
+        }
+
+        public char GetChar(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDataReader GetData(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetDataTypeName(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DateTime GetDateTime(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public decimal GetDecimal(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetDouble(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Type GetFieldType(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public float GetFloat(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid GetGuid(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public short GetInt16(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetInt32(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long GetInt64(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetName(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetOrdinal(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetString(int i)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object GetValue(int i)
+        {
+            return float.MaxValue;
+        }
+
+        public int GetValues(object[] values)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsDBNull(int i)
+        {
+            return false;
+        }
+
+        public object this[string name]
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public object this[int i]
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 
     class Producer : IDisposable
     {
-        Queue<Batch> batches = new Queue<Batch>();
+        Queue<int> batches = new Queue<int>();
         object _lock = new object();
         private int batchSize;
         private bool go;
@@ -273,7 +563,7 @@ namespace BinarySql
             this.batchSize = batchSize;
         }
 
-        internal IEnumerable<Batch> GetData()
+        internal IEnumerable<int> GetData()
         {
             while (true)
             {
@@ -297,7 +587,7 @@ namespace BinarySql
                 {
                     if (batches.Count < 10)
                     {
-                        batches.Enqueue(new Batch().Fill(batchSize));
+                        batches.Enqueue(batchSize);
                     }
                     Thread.Sleep(10);
                 }
@@ -313,3 +603,4 @@ namespace BinarySql
         }
     }
 }
+
