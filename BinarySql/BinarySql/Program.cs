@@ -19,15 +19,10 @@ namespace BinarySql
                 using (var producer = new Producer(2000))
                 {
                     var con1 = new ColumnConsumer(GetConnectionString(), producer);
-                    var con2 = new ColumnConsumer(GetConnectionString(), producer);
-                    var con3 = new ColumnConsumer(GetConnectionString(), producer);
 
                     producer.Start();
 
                     con1.Start();
-                    con2.Start();
-                    con3.Start();
-
 
                     Thread.Sleep(30000);
                     Console.WriteLine(producer.Produced);
@@ -37,20 +32,16 @@ namespace BinarySql
                 using (var producer = new Producer(2000))
                 {
                     var con1 = new BinaryConsumer(GetConnectionString(), producer);
-                    var con2 = new BinaryConsumer(GetConnectionString(), producer);
-                    var con3 = new BinaryConsumer(GetConnectionString(), producer);
 
                     producer.Start();
 
                     con1.Start();
-                    con2.Start();
-                    con3.Start();
-
 
                     Thread.Sleep(30000);
                     Console.WriteLine(producer.Produced);
                 }
             }
+
         }
 
         private static string GetConnectionString()
@@ -87,6 +78,7 @@ namespace BinarySql
 
                 SqlBulkCopy c = new SqlBulkCopy(con, SqlBulkCopyOptions.TableLock, tran);
                 c.DestinationTableName = "ManyColumns";
+                c.BatchSize = 2000;
                 for (int i = 0; i < 50; i++)
                 {
                     var fieldName = string.Format("C{0}", i);
@@ -181,58 +173,58 @@ namespace BinarySql
 
     class Measurement
     {
-        
-        public float c0 { get{return float.MaxValue; } }
-        public float c1 { get{return float.MaxValue; } } 
-        public float c2 { get{return float.MaxValue; } } 
-        public float c3 { get{return float.MaxValue; } } 
-        public float c4 { get{return float.MaxValue; } } 
-        public float c5 { get{return float.MaxValue; } } 
-        public float c6 { get{return float.MaxValue; } } 
-        public float c7 { get{return float.MaxValue; } } 
-        public float c8 { get{return float.MaxValue; } } 
-        public float c9 { get{return float.MaxValue; } } 
-        public float c10 { get{return float.MaxValue; } }
-        public float c11 { get{return float.MaxValue; } }
-        public float c12 { get{return float.MaxValue; } }
-        public float c13 { get{return float.MaxValue; } }
-        public float c14 { get{return float.MaxValue; } }
-        public float c15 { get{return float.MaxValue; } }
-        public float c16 { get{return float.MaxValue; } }
-        public float c17 { get{return float.MaxValue; } }
-        public float c18 { get{return float.MaxValue; } }
-        public float c19 { get{return float.MaxValue; } }
-        public float c20 { get{return float.MaxValue; } }
-        public float c21 { get{return float.MaxValue; } }
-        public float c22 { get{return float.MaxValue; } }
-        public float c23 { get{return float.MaxValue; } }
-        public float c24 { get{return float.MaxValue; } }
-        public float c25 { get{return float.MaxValue; } }
-        public float c26 { get{return float.MaxValue; } }
-        public float c27 { get{return float.MaxValue; } }
-        public float c28 { get{return float.MaxValue; } }
-        public float c29 { get{return float.MaxValue; } }
-        public float c30 { get{return float.MaxValue; } }
-        public float c31 { get{return float.MaxValue; } }
-        public float c32 { get{return float.MaxValue; } }
-        public float c33 { get{return float.MaxValue; } }
-        public float c34 { get{return float.MaxValue; } }
-        public float c35 { get{return float.MaxValue; } }
-        public float c36 { get{return float.MaxValue; } }
-        public float c37 { get{return float.MaxValue; } }
-        public float c38 { get{return float.MaxValue; } }
-        public float c39 { get{return float.MaxValue; } }
-        public float c40 { get{return float.MaxValue; } }
-        public float c41 { get{return float.MaxValue; } }
-        public float c42 { get{return float.MaxValue; } }
-        public float c43 { get{return float.MaxValue; } }
-        public float c44 { get{return float.MaxValue; } }
-        public float c45 { get{return float.MaxValue; } }
-        public float c46 { get{return float.MaxValue; } }
-        public float c47 { get{return float.MaxValue; } }
-        public float c48 { get{return float.MaxValue; } }
-        public float c49 { get{return float.MaxValue; } }
-        public byte[] bin { get{return b;}  }
+
+        public float c0 { get { return float.MaxValue; } }
+        public float c1 { get { return float.MaxValue; } }
+        public float c2 { get { return float.MaxValue; } }
+        public float c3 { get { return float.MaxValue; } }
+        public float c4 { get { return float.MaxValue; } }
+        public float c5 { get { return float.MaxValue; } }
+        public float c6 { get { return float.MaxValue; } }
+        public float c7 { get { return float.MaxValue; } }
+        public float c8 { get { return float.MaxValue; } }
+        public float c9 { get { return float.MaxValue; } }
+        public float c10 { get { return float.MaxValue; } }
+        public float c11 { get { return float.MaxValue; } }
+        public float c12 { get { return float.MaxValue; } }
+        public float c13 { get { return float.MaxValue; } }
+        public float c14 { get { return float.MaxValue; } }
+        public float c15 { get { return float.MaxValue; } }
+        public float c16 { get { return float.MaxValue; } }
+        public float c17 { get { return float.MaxValue; } }
+        public float c18 { get { return float.MaxValue; } }
+        public float c19 { get { return float.MaxValue; } }
+        public float c20 { get { return float.MaxValue; } }
+        public float c21 { get { return float.MaxValue; } }
+        public float c22 { get { return float.MaxValue; } }
+        public float c23 { get { return float.MaxValue; } }
+        public float c24 { get { return float.MaxValue; } }
+        public float c25 { get { return float.MaxValue; } }
+        public float c26 { get { return float.MaxValue; } }
+        public float c27 { get { return float.MaxValue; } }
+        public float c28 { get { return float.MaxValue; } }
+        public float c29 { get { return float.MaxValue; } }
+        public float c30 { get { return float.MaxValue; } }
+        public float c31 { get { return float.MaxValue; } }
+        public float c32 { get { return float.MaxValue; } }
+        public float c33 { get { return float.MaxValue; } }
+        public float c34 { get { return float.MaxValue; } }
+        public float c35 { get { return float.MaxValue; } }
+        public float c36 { get { return float.MaxValue; } }
+        public float c37 { get { return float.MaxValue; } }
+        public float c38 { get { return float.MaxValue; } }
+        public float c39 { get { return float.MaxValue; } }
+        public float c40 { get { return float.MaxValue; } }
+        public float c41 { get { return float.MaxValue; } }
+        public float c42 { get { return float.MaxValue; } }
+        public float c43 { get { return float.MaxValue; } }
+        public float c44 { get { return float.MaxValue; } }
+        public float c45 { get { return float.MaxValue; } }
+        public float c46 { get { return float.MaxValue; } }
+        public float c47 { get { return float.MaxValue; } }
+        public float c48 { get { return float.MaxValue; } }
+        public float c49 { get { return float.MaxValue; } }
+        public byte[] bin { get { return b; } }
 
         private static byte[] b;
 
@@ -273,7 +265,7 @@ namespace BinarySql
         private int batchSize;
         private bool go;
 
-        public int Produced { get; private set; } 
+        public int Produced { get; private set; }
 
         public Producer(int batchSize)
         {

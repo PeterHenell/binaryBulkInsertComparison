@@ -63,9 +63,10 @@ create table ManyColumns(
     id timestamp
 );
 
-create table OneBigBinaryColumn(ts timestamp, bin varbinary(2000));
+create table OneBigBinaryColumn(ts timestamp, bin varbinary(4000));
 
 select count(*) from ManyColumns -- 15,172 MB
 
 select count(*) from OneBigBinaryColumn --- 766,586 MB
 
+SELECT AVG(LEN(bin)) FROM OneBigBinaryColumn
