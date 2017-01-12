@@ -68,11 +68,11 @@ create table ManyColumns(
     id timestamp
 );
 
-create table OneBigBinaryColumn(ts timestamp, bin varbinary(4000));
+create table OneBigBinaryColumn(C0 varbinary(4000), ts timestamp);
 
-select count(*) from ManyColumns -- 15,172 MB
+select count(*) from ManyColumns
 
-select count(*) from OneBigBinaryColumn --- 766,586 MB
+select count(*) from OneBigBinaryColumn
 
 
 SELECT TOP 100 * FROM dbo.ManyColumns
