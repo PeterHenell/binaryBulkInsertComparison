@@ -86,7 +86,7 @@ namespace BinarySql
                 }
 
                 SqlBulkCopy c = new SqlBulkCopy(con, SqlBulkCopyOptions.TableLock, tran);
-                c.DestinationTableName = "peter";
+                c.DestinationTableName = "ManyColumns";
                 for (int i = 0; i < 50; i++)
                 {
                     var fieldName = string.Format("C{0}", i);
@@ -144,8 +144,8 @@ namespace BinarySql
                     cmd.ExecuteNonQuery();
                 }
 
-                SqlBulkCopy c = new SqlBulkCopy(con, SqlBulkCopyOptions.TableLock, tran);                
-                c.DestinationTableName = "peterBinary";
+                SqlBulkCopy c = new SqlBulkCopy(con, SqlBulkCopyOptions.TableLock, tran);
+                c.DestinationTableName = "OneBigBinaryColumn";
 
                 var fieldName = "bin";
                 c.ColumnMappings.Add(

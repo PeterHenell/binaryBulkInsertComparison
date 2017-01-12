@@ -10,7 +10,7 @@ ALTER DATABASE [BinaryTestGround] SET RECOVERY BULK_LOGGED WITH NO_WAIT
 USE [BinaryTestGround]
 GO
 
-create table peter(
+create table ManyColumns(
 id timestamp,
 	C0 float,
 	C1 float,
@@ -64,11 +64,9 @@ id timestamp,
 	C49 float
 );
 
-create table peterBinary(ts timestamp, bin varbinary(2000));
+create table OneBigBinaryColumn(ts timestamp, bin varbinary(2000));
 
-select count(*) from peter -- 15,172 MB
+select count(*) from ManyColumns -- 15,172 MB
 
-select count(*) from peterBinary --- 766,586 MB
-
-select top 100 * from peterBinary 
+select count(*) from OneBigBinaryColumn --- 766,586 MB
 
