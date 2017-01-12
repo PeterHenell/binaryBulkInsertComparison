@@ -1,6 +1,13 @@
-drop table peter;
+USE master;
 GO
-drop table peterBinary;
+IF DB_ID('BinaryTestGround') IS NOT NULL DROP DATABASE [BinaryTestGround];
+GO
+CREATE DATABASE [BinaryTestGround];
+GO
+
+ALTER DATABASE [BinaryTestGround] SET RECOVERY BULK_LOGGED WITH NO_WAIT
+
+USE [BinaryTestGround]
 GO
 
 create table peter(
@@ -64,3 +71,4 @@ select count(*) from peter -- 15,172 MB
 select count(*) from peterBinary --- 766,586 MB
 
 select top 100 * from peterBinary 
+

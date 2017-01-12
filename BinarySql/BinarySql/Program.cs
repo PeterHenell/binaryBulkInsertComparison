@@ -58,7 +58,7 @@ namespace BinarySql
             var builder = new SqlConnectionStringBuilder();
             builder.DataSource = "localhost\\peheintegration";
             builder.IntegratedSecurity = true;
-            builder.InitialCatalog = "PeterBinaryTest";
+            builder.InitialCatalog = "BinaryTestGround";
             return builder.ToString();
         }
     }
