@@ -4,8 +4,6 @@ From question on SO http://stackoverflow.com/questions/41597046/sql-server-perfo
 
 Comparing bulk inserts done as a binary field vs 50 float fields
 
-Uses dll from https://github.com/PeterHenell/IDataReaderMock which allow me to use any collection of objects as a IDataReader.
-
 ## How to run
  
  * Run the sql script to create the tables
@@ -30,4 +28,4 @@ select count(*) from OneBigBinaryColumn --- 5 949 024 Rows
 
 ## But how can there be such a big difference between the two methods?
 
-* ColumnConsumer is probably falling behind due to all the reflection being used by the IDataReaderMock. Needs more investigation to clarify.
+* Good question
